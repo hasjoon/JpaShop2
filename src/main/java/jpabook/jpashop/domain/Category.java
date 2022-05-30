@@ -9,6 +9,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import jpabook.jpashop.domain.item.Item;
 import lombok.Getter;
@@ -32,7 +33,7 @@ public class Category {
     //ManyToMany는 필드를 더 추가할 수 없기때문에 걍 쓰지맣ㅎ
     private List<Item> items = new ArrayList<>();
 
-    @ManyToMany
+    @ManyToOne
     @JoinColumn(name = "parent_id")
     private Category parent;
 
