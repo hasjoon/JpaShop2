@@ -8,8 +8,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import javax.persistence.EntityManager;
 import jpabook.jpashop.domain.Member;
 import jpabook.jpashop.domain.repository.MemberRepository;
+import org.junit.Test;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
 //import org.junit.runner.RunWith;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,9 +31,10 @@ public class MemberServiceTest {
     EntityManager em;
 
 
-    @Test
+    @org.junit.jupiter.api.Test // vintage 에러남 - vintage는 unit3,4 기반
+//    @Test //junit4 gradle에 4로 넣어 놨으므로 에러 없이
     @DisplayName("회원가입 정상작동 확인 TEST")
-    @Rollback(false)
+//    @Rollback(false)
     public void 회원가입() throws Exception {
         //given
         Member member = new Member();
@@ -47,8 +48,8 @@ public class MemberServiceTest {
         assertEquals(member, memberRepository.findOne(savedId));
     }
 
-    @Test
-    @DisplayName("중복회원 예외 TEST")
+    @org.junit.Test(expected = IllegalStateException.class)
+//    @DisplayName("중복회원 예외 TEST")
     public void 중복_회원_예외() throws Exception{
         //given
         Member member1 = new Member();
@@ -59,12 +60,7 @@ public class MemberServiceTest {
 
         //when
         memberService.join(member1);
-        try{
-            memberService.join(member2); //예외가 발생해야함!
-        } catch (IllegalStateException e){
-            return;
-        }
-
+        memberService.join(member2); //예외가 발생해야함!
 
         //then
         fail("예외가 발생해야 한다.");
