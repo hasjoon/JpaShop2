@@ -2,6 +2,7 @@ package jpabook.jpashop.domain.Service;
 
 //import static org.junit.Assert.*;
 
+import static org.junit.Assert.fail;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import javax.persistence.EntityManager;
@@ -47,12 +48,26 @@ public class MemberServiceTest {
     }
 
     @Test
+    @DisplayName("중복회원 예외 TEST")
     public void 중복_회원_예외() throws Exception{
         //given
+        Member member1 = new Member();
+        member1.setName("Kim");
+
+        Member member2 = new Member();
+        member2.setName("Kim");
 
         //when
+        memberService.join(member1);
+        try{
+            memberService.join(member2); //예외가 발생해야함!
+        } catch (IllegalStateException e){
+            return;
+        }
+
 
         //then
+        fail("예외가 발생해야 한다.");
     }
 
 }
