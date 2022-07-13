@@ -1,9 +1,12 @@
 package jpabook.jpashop.domain;
 
+import static javax.persistence.FetchType.LAZY;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -16,14 +19,17 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.aspectj.weaver.ast.Or;
+import org.springframework.data.util.Lazy;
 
 @Entity
 @Table(name = "orders")
-@Getter
-@Setter
+@Getter @Setter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Order {
 
     @Id
@@ -31,14 +37,15 @@ public class Order {
     @Column(name = "order_id")
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "member_id") //foreign key 가 됨
     private Member member;
 
-    @OneToMany(mappedBy = "order")
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
+    //cascade 란? order persist하면 아래의 OrderItem도 강제로 persist 날려줌
     private List<OrderItem> orderItems = new ArrayList<>();
 
-    @OneToOne
+    @OneToOne(fetch = LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "delivery_id")
     private Delivery delivery;
 
@@ -58,7 +65,7 @@ public class Order {
         orderItem.setOrder(this);
     }
 
-    public void serDelivery(Delivery delivery){
+    public void setDelivery(Delivery delivery){
         this.delivery = delivery;
         delivery.setOrder(this);
     }
@@ -96,9 +103,14 @@ public class Order {
      * 전체 주문 가격 조회
      */
     public int getTotalPrice(){
-        return orderItems.stream().mapToInt(OrderItem::getTotalPrice).sum();
+        int totalPrice = 0;
+        for (OrderItem orderItem : orderItems){
+            totalPrice += orderItem.getTotalPrice();
+        }
+        return totalPrice;
 
+//        return orderItems.stream().mapToInt(OrderItem::getTotalPrice).sum();
         //스트림이나 람다를 활용하면 깔끔하게 작업할 수 있음
-        //ctrl + alt + n -> 코드 줄여줌 인라인화 라고함
+        //ctrl + alt + n = inline화
     }
 }
