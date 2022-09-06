@@ -83,7 +83,7 @@ public class OrderServiceTest {
     }
 
     @Test(expected = NotEnoughStockException.class)
-    @DisplayName("주문수량초과 TEST")
+//    @DisplayName("주문수량초과 TEST")
     public void 주문수량초과() throws Exception {
         //given
         Item item = new Item();
